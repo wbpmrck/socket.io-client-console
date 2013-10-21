@@ -128,14 +128,14 @@ exports.route ={
                             s.on('disconnect', function(){
                                 self.connected--;
                                 //delete from connections
-                                for(var m1=self.connections.length;m1>=0;m1--){
+                                for(var m1=self.connections.length-1;m1>=0;m1--){
                                     var sock = self.connections[m1];
                                     if(sock.id === s.id){
                                         self.connections.splice(m1,1);
                                     }
                                 }
                                 //delete from the selected array
-                                for(var m2=self.selectedSockets.length;m2>=0;m2--){
+                                for(var m2=self.selectedSockets.length-1;m2>=0;m2--){
                                     var sock = self.selectedSockets[m2];
                                     if(sock.id === s.id){
                                         self.selectedSockets.splice(m2,1);
@@ -207,7 +207,19 @@ exports.route ={
     disconnect:{
         doc:'force current selected sockets to disconnect from server.',
         handler:function(readLineInterface,args,next){
+            var self = this;//save the this ref
 
+            if(self.selectedSockets.length>0){
+                for(var i=self.selectedSockets.length-1;i>=0;i--){
+                    var sock = self.selectedSockets[i];
+                    sock.disconnect();
+//                    self.selectedSockets
+                }
+                setTimeout(next('promptCommand'),2000);
+            }
+            else{
+                next('promptCommand',['you should select sockets first!'])
+            }
         }
     },
     send:{
