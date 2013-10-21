@@ -1,0 +1,22 @@
+{
+  "name": "socket.io-client-console",
+  "version": "0.1.0",
+  "description": "provider a command-line way to handle several connections and send/receive messages from socket.io server",
+  "keywords": [
+    "command",
+    "socket.io",
+    "socket.io-client"
+  ],
+  "repository": {
+  },
+  "author": {
+      "name": "kai cui"
+  },
+  "homepage": "https://github.com/wbpmrck/socket.io-client-console",
+  "dependencies": {
+      "socket.io-client": "0.9.16"
+  },
+  "devDependencies": {
+  },
+  "main": "./index"
+}
