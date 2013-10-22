@@ -199,7 +199,7 @@ exports.route ={
                 next('promptCommand',['need 2 params:(select <startIndexBaseZero> <count>)'])
             }
             else{
-                self.selectedSockets = self.connections.splice(args[0],args[1]);
+                self.selectedSockets = self.connections.slice(args[0],args[1]);
                 next('promptCommand',[self.selectedSockets.length+'/'+self.connections.length+' sockets selected.'])
             }
         }
