@@ -226,8 +226,8 @@ exports.route ={
         doc:'send message to server. \n [send <subject> <jsonData> ]',
         handler:function(readLineInterface,args,next){
             console.log('send: %s ',args);
-            console.log('subject: %s ',args[0]);
-            console.log('data: %s ',args[1]);
+            //console.log('subject: %s ',args[0]);
+            //console.log('data: %s ',args[1]);
 //            console.log('data1: %s ',eval(args[1]));
             console.log('data2: %s ',JSON.parse(args[1]));
             var self = this;//save the this ref
