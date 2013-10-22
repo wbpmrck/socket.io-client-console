@@ -1,7 +1,7 @@
 socket.io-client-console
 ========================
 
-provide a command-line way to handle several connections and send/receive messages from socket.io server
+provide a command-line way to handle several connections and send/receive messages from/to socket.io server
 
 <hr/>
 ##What is this?
