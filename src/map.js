@@ -223,13 +223,9 @@ exports.route ={
         }
     },
     send:{
-        doc:'send message to server. \n [send <subject> <jsonData> ]',
+        doc:'send message to server. \n [send <subject> <jsonData>，exp: send login name:hahaha,sex:1 ]',
         handler:function(readLineInterface,args,next){
             console.log('send: %s ',args);
-            //console.log('subject: %s ',args[0]);
-            //console.log('data: %s ',args[1]);
-//            console.log('data1: %s ',eval(args[1]));
-            console.log('data2: %s ',JSON.parse(args[1]));
             var self = this;//save the this ref
             //检查参数
             if(args.length<2){
@@ -237,8 +233,21 @@ exports.route ={
             }
             else{
                 var subject = args[0],
-                    data = JSON.parse(args[1]);
-//                    data = eval(args[1]);
+                    data = args[1];
+                //parse data to json
+                if(data.indexOf(':')>=0){
+                    var jsonData ={};
+                    var key_values = data.split(',');
+                    for(var m=0,n=key_values.length;m<n;m++){
+                        var pair = key_values[m];
+                        if(pair.indexOf(':')>=0){
+                            var pairs = pair.split(':');
+                            jsonData[pairs[0]] = pairs[1];
+                        }
+                    }
+                    data = jsonData;
+                    console.log('parsed: %s ',JSON.stringify(data));
+                }
 
                 for(var i=0,j=self.selectedSockets.length;i<j;i++){
                     var sock = self.selectedSockets[i];

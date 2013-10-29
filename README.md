@@ -15,6 +15,14 @@ provide a command-line way to handle several connections and send/receive messag
  <li>带命令提示.</li>
  <li>支持help方法查询指令的作用.</li>
  <li>可以自己扩展指令，完成更丰富的功能.</li>
+ <li>send方法支持发送key,value对。输入的时候以符号:分隔key和value,以符号,分隔2个key.(注意传递的数据中避免出现:和,号)</li>
+ </ul>
+
+
+
+##TodoList
+<ul>
+<li>研究单元测试console输入的方法.</li>
 </ul>
 
 
