@@ -1,5 +1,5 @@
 
-
+var util = require('util');
 //use  'this' to ref to the context object
 exports.route ={
     /*
@@ -108,8 +108,11 @@ exports.route ={
                     address = 'http://'+address;
                 }
 
+                console.log('target url is %s',address);
+                var tried =0;
                 for(var i=0,j=count;i<j;i++){
                     try{
+                        tried++;
                         var socket = self.io.connect(address, {
 //                    port: 8011,
                             reconnect:false,
@@ -122,6 +125,36 @@ exports.route ={
                                 self.connected++;
                                 console.log('total:%s connected.',self.connected);
                                 if(self.connected === connections.length){
+                                    next('promptCommand')
+                                }
+                            });
+
+                            s.on
+
+                            s.on('error', function (reason) {
+                                // socket connected
+                                console.log("connect  error occurs");
+
+//                                self.connected--;
+                                //delete from connections
+                                for(var m1=self.connections.length-1;m1>=0;m1--){
+                                    var sock = self.connections[m1];
+                                    if(sock.id === s.id){
+                                        self.connections.splice(m1,1);
+                                    }
+                                }
+                                //delete from the selected array
+                                for(var m2=self.selectedSockets.length-1;m2>=0;m2--){
+                                    var sock = self.selectedSockets[m2];
+                                    if(sock.id === s.id){
+                                        self.selectedSockets.splice(m2,1);
+                                    }
+                                }
+                                console.log('total:%s connected.',self.connected);
+                                console.log('total:%s selected.',self.selectedSockets.length);
+
+                                //如果是连接失败，则需要有机会进入下一步操作
+                                if(tried === count){
                                     next('promptCommand')
                                 }
                             });
@@ -157,13 +190,13 @@ exports.route ={
             if(!args||args.length<1){
                 readLineInterface.question("how many connections will create?\n", function(count) {
                     readLineInterface.question("please input the address(http://xxx:xxx)\n", function(address) {
-                        console.log("creating : "+count+ 'connections to: '+address);
+                        console.log("creating : "+count+ ' connections to: '+address);
                         _createConnection(parseInt(count),address);
                     });
                 });
             }
             else{
-                console.log("creating : "+args[0]+ 'connections to: '+args[1]);
+                console.log("creating : "+args[0]+ ' connections to: '+args[1]);
                 _createConnection(parseInt(args[0]),args[1]);
             }
         }
@@ -236,22 +269,47 @@ exports.route ={
                     data = args[1];
                 //parse data to json
                 if(data.indexOf(':')>=0){
-                    var jsonData ={};
-                    var key_values = data.split(',');
-                    for(var m=0,n=key_values.length;m<n;m++){
-                        var pair = key_values[m];
-                        if(pair.indexOf(':')>=0){
-                            var pairs = pair.split(':');
-                            jsonData[pairs[0]] = pairs[1];
-                        }
-                    }
-                    data = jsonData;
+//                    var jsonData ={};
+//                    var key_values = data.split(',');
+//                    for(var m=0,n=key_values.length;m<n;m++){
+//                        var pair = key_values[m];
+//                        if(pair.indexOf(':')>=0){
+//                            var pairs = pair.split(':');
+//                            jsonData[pairs[0]] = pairs[1];
+//                        }
+//                    }
+//                    data = jsonData;
+//                    console.log('parsed: %s ',JSON.stringify(data));
+
+
+                    data = JSON.parse(data);
                     console.log('parsed: %s ',JSON.stringify(data));
                 }
 
                 for(var i=0,j=self.selectedSockets.length;i<j;i++){
                     var sock = self.selectedSockets[i];
                     sock.emit(subject,data);
+                }
+                next('promptCommand');
+            }
+        }
+    },
+    subscribe:{
+        doc:'sub message send from server.the message send to the channel will print on screen. \n [subscribe <subject> ，exp: subscribe loginResponse ]',
+        handler:function(readLineInterface,args,next){
+            var self = this;//save the this ref
+            //检查参数
+            if(args.length<1){
+                next('promptCommand',['need 1 params(subscribe <subject> )'])
+            }
+            else{
+                var subject = args[0];
+
+                for(var i=0,j=self.selectedSockets.length;i<j;i++){
+                    var sock = self.selectedSockets[i];
+                    sock.on(subject,function(){
+                        console.log('socket:%s rec message from channel:%s ,data is: %s',this.id,subject,JSON.stringify(arguments));
+                    })
                 }
                 next('promptCommand');
             }

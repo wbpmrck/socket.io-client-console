@@ -18,6 +18,8 @@ var io = require('socket.io-client');
 var processMap = require('./map').route,
     commandList =[],reserved={'hello':1,'end':1,'noSuchCommand':1,'promptCommand':1,'help':1};
 
+var preProcessor  = require('./preProcessor');
+
 //init commandList
 for(var i in processMap){
     if(!reserved[i]){
@@ -70,10 +72,13 @@ function processCommand(commandName,readLineInterface,context,args){
     if(!processMap.hasOwnProperty(commandName)){
         commandName= 'noSuchCommand'
     }
-    args = args||[];
+    try{
+        args = args||[];
+        for(var i=args.length-1;i>=0;i--){
+            args[i] =preProcessor.process(args[i]);
+        }
 //    console.log('args.length: %s', args.length);
 //    console.log('\n[processCommand:] %s , %s \n',commandName,args);
-    try{
         processMap[commandName].handler.call(context,readLineInterface,args,function next(nextCommandName,args){
             processCommand(nextCommandName,readLineInterface,context,args)
         });
